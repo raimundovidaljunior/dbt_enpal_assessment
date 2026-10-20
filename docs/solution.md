@@ -21,7 +21,6 @@ flowchart LR
     act[(activity)] --> p_act[prep_pipedrive__activity]
     at[(activity_types)] --> p_at[prep_pipedrive__activity_types]
     p_dc --> i_se[int_crm__deal_stage_entries]
-    p_st --> i_se
     i_se --> i_si[int_crm__deal_stage_entries_inferred]
     p_act --> i_sc[int_crm__sales_calls]
     p_at --> i_sc

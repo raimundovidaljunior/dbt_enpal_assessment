@@ -14,9 +14,10 @@ models:
       - Deals are counted in the month the event happened (event month, not the month the deal
         was created), so a later step can exceed an earlier one in the same month.
 
-      - Sales Call 1 and 2 (steps 2.1 and 3.1) come from activities that do not link to deals
-        (only 8 of 4,572 activity deal_ids exist in deal_changes). They are a separate population,
-        e.g. 2024-01 has 148 Sales Call 1 deals against 30 Lead Generation deals.
+      - Sales Call 1 and 2 (steps 2.1 and 3.1) count sales calls by due month, not deals of the
+        stage funnel. Activity deal_ids cannot be linked to deal_changes: 8 of 4,572 match, about
+        what random chance gives (~10), and almost every call carries its own deal_id. So
+        2024-01 shows 148 Sales Call 1 against 30 Lead Generation.
 
       - Activity data ends in 2024-09, so steps 2.1 and 3.1 are 0 from 2024-10.
     config:

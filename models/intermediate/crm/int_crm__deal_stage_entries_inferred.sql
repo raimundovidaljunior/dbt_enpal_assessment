@@ -5,12 +5,6 @@ with deal_stage_entries as (
 
 ),
 
-stages as (
-
-    select * from {{ ref('prep_pipedrive__stages') }}
-
-),
-
 skipped_stages as (
 
     select
@@ -31,12 +25,9 @@ final as (
         )) as deal_stage_entry_id,
         skipped_stages.deal_id,
         skipped_stages.stage_id,
-        stages.stage_name,
         skipped_stages.reached_stage_id,
         skipped_stages.entered_at
     from skipped_stages
-    left join stages
-        on skipped_stages.stage_id = stages.stage_id
 
 )
 

@@ -34,8 +34,6 @@ models:
               arguments:
                 to: ref('prep_pipedrive__stages')
                 field: stage_id
-      - name: stage_name
-        description: Name of the stage from prep_pipedrive__stages.
       - name: previous_stage_id
         description: Stage the deal was in before this entry (null for the first entry).
       - name: entered_at
@@ -67,8 +65,6 @@ models:
               arguments:
                 to: ref('prep_pipedrive__stages')
                 field: stage_id
-      - name: stage_name
-        description: Name of the stage from prep_pipedrive__stages.
       - name: reached_stage_id
         description: Stage actually entered that caused this stage to be inferred.
       - name: entered_at
@@ -151,11 +147,6 @@ unit_tests:
           - {deal_id: 10, changed_at: '2024-01-01 00:00:00', changed_field_key: stage_id, new_value: '1'}
           - {deal_id: 10, changed_at: '2024-01-02 00:00:00', changed_field_key: user_id, new_value: '99'}
           - {deal_id: 10, changed_at: '2024-01-02 12:00:00', changed_field_key: stage_id, new_value: '2'}
-      - input: ref('prep_pipedrive__stages')
-        rows:
-          - {stage_id: 1, stage_name: Lead Generation}
-          - {stage_id: 2, stage_name: Qualified lead}
-          - {stage_id: 3, stage_name: Needs Assessment}
     expect:
       rows:
         - {deal_id: 10, stage_id: 1, previous_stage_id: null}
@@ -171,10 +162,6 @@ unit_tests:
           - {deal_id: 1, stage_id: 1, previous_stage_id: null, entered_at: '2024-01-01 00:00:00'}
           - {deal_id: 1, stage_id: 3, previous_stage_id: 1, entered_at: '2024-01-10 00:00:00'}
           - {deal_id: 1, stage_id: 5, previous_stage_id: 3, entered_at: '2024-02-01 00:00:00'}
-      - input: ref('prep_pipedrive__stages')
-        rows:
-          - {stage_id: 2, stage_name: Qualified lead}
-          - {stage_id: 4, stage_name: Proposal/Quote Preparation}
     expect:
       rows:
         - {deal_id: 1, stage_id: 2, reached_stage_id: 3, entered_at: '2024-01-10 00:00:00'}
@@ -191,8 +178,5 @@ unit_tests:
           - {deal_id: 2, stage_id: 3, previous_stage_id: 2, entered_at: '2024-01-03 00:00:00'}
           - {deal_id: 2, stage_id: 2, previous_stage_id: 3, entered_at: '2024-01-04 00:00:00'}
           - {deal_id: 3, stage_id: 1, previous_stage_id: null, entered_at: '2024-01-01 00:00:00'}
-      - input: ref('prep_pipedrive__stages')
-        rows:
-          - {stage_id: 1, stage_name: Lead Generation}
     expect:
       rows: []

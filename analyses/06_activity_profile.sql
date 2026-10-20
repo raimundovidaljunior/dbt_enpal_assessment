@@ -1,8 +1,8 @@
 -- Question: can activities (sales calls) be linked to deals, and are they reliable?
 -- Findings:
 --   Four types with ~1,130-1,180 rows each; about 50% are done.
---   Only 8 of the 4,572 activity deal_ids exist in deal_changes, so activities cannot be
---   joined to the deal pipeline. They are effectively a separate population.
+--   Only 8 of the 4,572 activity deal_ids exist in deal_changes, about what chance predicts
+--   (see 08_activity_deal_overlap), so activities cannot be joined to the deal pipeline.
 --   11 activity_ids appear twice with different attributes, so activity_id is not a key.
 --   Consequence: Sales Call 1 (meeting) and Sales Call 2 (sc_2) are counted on their own
 --   from activity, by due_to month, done or not; int_crm__sales_calls adds a surrogate key.

@@ -96,4 +96,5 @@ With these models `int_crm__deal_stage_entries` has four readers, which further 
 Next steps not built yet:
 - conversion and cohort funnels from `fct_funnel_events`;
 - incremental loads (`int_crm__deal_current_state`: recompute the deals changed since the last run, merge on `deal_id`);
-- source freshness.
+- source freshness;
+- a shared calendar model (month spine with quarter and fiscal attributes) once more time-based reports exist, or if the report should run up to the current month. Today the month range comes from the data.

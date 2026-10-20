@@ -21,6 +21,8 @@ events as (
 
 ),
 
+-- month range comes from the data (first to last event month); a shared calendar model
+-- would replace this once more time-based reports exist (see docs/solution.md)
 months as (
 
     select generate_series(min(month), max(month), interval '1 month')::date as month

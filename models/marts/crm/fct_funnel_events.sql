@@ -78,10 +78,16 @@ activity_events as (
         on funnel_steps.source_type = 'activity'
         and funnel_steps.source_value = sales_calls.activity_type
 
+),
+
+final as (
+
+    select * from stage_events
+    union all
+    select * from inferred_stage_events
+    union all
+    select * from activity_events
+
 )
 
-select * from stage_events
-union all
-select * from inferred_stage_events
-union all
-select * from activity_events
+select * from final

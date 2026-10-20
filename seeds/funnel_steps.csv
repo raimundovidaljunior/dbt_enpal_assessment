@@ -1,0 +1,12 @@
+funnel_step,kpi_name,source_type,source_value,sort_order
+1,Lead Generation,stage,1,10
+2,Qualified Lead,stage,2,20
+2.1,Sales Call 1,activity,meeting,25
+3,Needs Assessment,stage,3,30
+3.1,Sales Call 2,activity,sc_2,35
+4,Proposal/Quote Preparation,stage,4,40
+5,Negotiation,stage,5,50
+6,Closing,stage,6,60
+7,Implementation/Onboarding,stage,7,70
+8,Follow-up/Customer Success,stage,8,80
+9,Renewal/Expansion,stage,9,90

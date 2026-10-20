@@ -19,12 +19,11 @@ flowchart LR
     dc[(deal_changes)] --> p_dc[prep_pipedrive__deal_changes]
     st[(stages)] --> p_st[prep_pipedrive__stages]
     act[(activity)] --> p_act[prep_pipedrive__activity]
-    at[(activity_types)] --> p_at[prep_pipedrive__activity_types]
     p_dc --> i_se[int_crm__deal_stage_entries]
     i_se --> i_si[int_crm__deal_stage_entries_inferred]
     p_act --> i_sc[int_crm__sales_calls]
-    p_at --> i_sc
-    seed[(seed: funnel_steps)] --> f_fe
+    seed[(seed: funnel_steps)] --> i_sc
+    seed --> f_fe
     i_se --> f_fe[fct_funnel_events]
     i_si --> f_fe
     i_sc --> f_fe

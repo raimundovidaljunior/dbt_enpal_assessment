@@ -54,7 +54,7 @@ Conventions: import CTEs, then logic CTEs, then `final`. Columns are explicit an
 | **Event-month counting**: deals with an event for the step in that month. | A monthly view of funnel activity. A deal reaching several steps in a month counts in each. | Cohort by created month, or cumulative "reached ≥ step". Both can be built from `fct_funnel_events`. |
 | **Sales calls count whether done or not**, from `activity` alone, by `due_to` month. | Activities can't be joined to deals (8 of 4,572 overlap), and `due_to` is the only timestamp. | Done calls only: `where is_done` |
 | **Funnel steps are defined in a seed.** | The README fixes the numbering and names. Steps 2.1 and 3.1 are activities, not stages. | A new pipeline stage without a seed row fails the build (not_null tests on `dim_deal_stages`). |
-| **Reused deal_ids (5) are treated as one deal.** Lost reason doesn't remove deals. | No reliable split heuristic exists, and every deal has a lost reason. | Revisit once stakeholders confirm the cause. |
+| **The 5 deal_ids with two creations are treated as one deal.** Lost reason doesn't remove deals. | Their two histories run in parallel, so no split heuristic is reliable, and every deal has a lost reason. | Revisit once stakeholders confirm what they represent. |
 | **Dense grid**, with 0 for months without deals. | Gaps are explicit, and dashboards don't need to fill them. | Sparse rows |
 
 ## How to read the report
@@ -75,7 +75,7 @@ Conventions: import CTEs, then logic CTEs, then `final`. Columns are explicit an
 
 1. Who uses the report, and for what (throughput vs. conversion)? This decides event-month vs. cohort counting.
 2. Should skipped stages count as entered? (Assumed yes.)
-3. Are the 5 reused deal_ids a known CRM issue?
+3. What do the 5 deal_ids with two creations represent: merged deals, duplicates, or something else?
 4. Why don't activity `deal_id`s match `deal_changes`?
 5. Should calls that weren't done count?
 

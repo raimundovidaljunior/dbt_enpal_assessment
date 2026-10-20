@@ -6,9 +6,9 @@ models:
       One row per actual stage entry of a deal (one per stage_id change in the source).
       Skipped stages are not included here; see int_crm__deal_stage_entries_inferred.
 
-      Known issue: 5 deal_ids (e.g. 399956, 554294) have two add_time events and
-      overlapping stage histories, which suggests reused ids. They are treated as one
-      deal, so their previous_stage_id and inferred rows can be off. The impact needs
+      Known limitation: 5 deal_ids (e.g. 399956, 554294) have two add_time events with
+      parallel, overlapping stage histories (cause unknown). They are treated as one deal,
+      so their previous_stage_id and inferred rows can be off. What they represent needs
       to be clarified with business stakeholders before modelling around it.
 
       Materialized as a table (an exception to the intermediate views): fct_funnel_events reads

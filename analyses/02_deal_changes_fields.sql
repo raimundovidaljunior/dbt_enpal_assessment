@@ -2,7 +2,7 @@
 -- Findings:
 --   Four field keys only: stage_id (8,906), user_id (2,500), add_time (2,000), lost_reason (2,000).
 --   Every deal has every field. add_time and lost_reason occur at most twice per deal
---   (the 1,995 deals have 2,000 add_time events, see 04_reused_deal_ids).
+--   (the 1,995 deals have 2,000 add_time events, see 04_deals_with_two_creations).
 --   deal_changes is an event log, so deal state (owner, stage, lost reason) must be rebuilt
 --   from the latest event per field; the funnel only needs the stage_id events.
 

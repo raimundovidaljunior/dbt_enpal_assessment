@@ -4,9 +4,9 @@ with activity as (
 
 ),
 
-activity_types as (
+funnel_steps as (
 
-    select * from {{ ref('prep_pipedrive__activity_types') }}
+    select * from {{ ref('funnel_steps') }}
 
 ),
 
@@ -22,13 +22,13 @@ final as (
         activity.deal_id,
         activity.assigned_user_id,
         activity.activity_type,
-        activity_types.activity_type_name,
         activity.is_done,
         activity.due_at
     from activity
-    inner join activity_types
-        on activity.activity_type = activity_types.activity_type
-    where activity.activity_type in ('meeting', 'sc_2')
+    -- sales calls are the activity types mapped to a funnel step in the seed
+    where activity.activity_type in (
+        select source_value from funnel_steps where source_type = 'activity'
+    )
 
 )
 

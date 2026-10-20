@@ -23,70 +23,61 @@ sales_calls as (
 
 ),
 
-stage_events as (
+-- events keyed like the seed (source_type, source_value), so it is joined once
+events as (
 
     select
-        deal_stage_entries.deal_stage_entry_id as funnel_event_id,
-        deal_stage_entries.deal_id,
-        funnel_steps.funnel_step,
-        funnel_steps.kpi_name,
-        funnel_steps.sort_order,
-        deal_stage_entries.entered_at as event_at,
-        'stage' as event_source,
+        deal_stage_entry_id as funnel_event_id,
+        deal_id,
+        'stage' as source_type,
+        stage_id::text as source_value,
+        entered_at as event_at,
         false as is_inferred,
         true as is_done
     from deal_stage_entries
-    inner join funnel_steps
-        on funnel_steps.source_type = 'stage'
-        and funnel_steps.source_value = deal_stage_entries.stage_id::text
 
-),
-
-inferred_stage_events as (
+    union all
 
     select
-        deal_stage_entries_inferred.deal_stage_entry_id as funnel_event_id,
-        deal_stage_entries_inferred.deal_id,
-        funnel_steps.funnel_step,
-        funnel_steps.kpi_name,
-        funnel_steps.sort_order,
-        deal_stage_entries_inferred.entered_at as event_at,
-        'stage' as event_source,
+        deal_stage_entry_id as funnel_event_id,
+        deal_id,
+        'stage' as source_type,
+        stage_id::text as source_value,
+        entered_at as event_at,
         true as is_inferred,
         true as is_done
     from deal_stage_entries_inferred
-    inner join funnel_steps
-        on funnel_steps.source_type = 'stage'
-        and funnel_steps.source_value = deal_stage_entries_inferred.stage_id::text
 
-),
-
-activity_events as (
+    union all
 
     select
-        sales_calls.sales_call_id as funnel_event_id,
-        sales_calls.deal_id,
-        funnel_steps.funnel_step,
-        funnel_steps.kpi_name,
-        funnel_steps.sort_order,
-        sales_calls.due_at as event_at,
-        'activity' as event_source,
+        sales_call_id as funnel_event_id,
+        deal_id,
+        'activity' as source_type,
+        activity_type as source_value,
+        due_at as event_at,
         false as is_inferred,
-        sales_calls.is_done
+        is_done
     from sales_calls
-    inner join funnel_steps
-        on funnel_steps.source_type = 'activity'
-        and funnel_steps.source_value = sales_calls.activity_type
 
 ),
 
 final as (
 
-    select * from stage_events
-    union all
-    select * from inferred_stage_events
-    union all
-    select * from activity_events
+    select
+        events.funnel_event_id,
+        events.deal_id,
+        funnel_steps.funnel_step,
+        funnel_steps.kpi_name,
+        funnel_steps.sort_order,
+        events.event_at,
+        events.source_type as event_source,
+        events.is_inferred,
+        events.is_done
+    from events
+    inner join funnel_steps
+        on events.source_type = funnel_steps.source_type
+        and events.source_value = funnel_steps.source_value
 
 )
 

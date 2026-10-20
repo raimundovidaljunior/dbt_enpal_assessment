@@ -104,8 +104,9 @@ models:
 
   - name: int_crm__sales_calls
     description: >
-      Sales call activities (Sales Call 1 = meeting, Sales Call 2 = sc_2), done or not.
-      activity_id is not unique, as in the source.
+      Sales call activities, done or not: the activity types mapped to a funnel step in the
+      funnel_steps seed (Sales Call 1 = meeting, Sales Call 2 = sc_2). activity_id is not
+      unique, as in the source.
     columns:
       - name: sales_call_id
         description: Surrogate key over all columns (activity_id is not unique in the source).
@@ -124,11 +125,10 @@ models:
         description: Activity type code.
         data_tests:
           - not_null
-          - accepted_values:
+          - relationships:
               arguments:
-                values: ['meeting', 'sc_2']
-      - name: activity_type_name
-        description: Activity type display name.
+                to: ref('funnel_steps')
+                field: source_value
       - name: is_done
         description: Whether the call was completed.
       - name: due_at

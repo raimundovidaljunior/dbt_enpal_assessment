@@ -78,7 +78,10 @@ models:
       - name: stages_entered_count
         description: Number of distinct stages the deal actually entered.
       - name: stages_skipped_count
-        description: Number of distinct stages skipped (inferred) on the way to a later stage.
+        description: >
+          Number of distinct stages skipped (inferred) on the way to a later stage. After a
+          backward move (8 in the data), a stage can count both as skipped and as entered,
+          e.g. 1 -> 3 then back to 2.
       - name: first_stage_entered_at
         description: Timestamp of the first stage entry.
       - name: last_stage_entered_at

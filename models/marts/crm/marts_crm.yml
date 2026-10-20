@@ -1,6 +1,21 @@
 version: 2
 
 models:
+  - name: dim_crm_users
+    description: Pipedrive users (deal owners and activity assignees).
+    columns:
+      - name: user_id
+        description: User id.
+        data_tests:
+          - unique
+          - not_null
+      - name: user_name
+        description: User full name.
+      - name: email
+        description: User email.
+      - name: modified_at
+        description: Last modification timestamp of the user record.
+
   - name: dim_deal_stages
     description: >
       Deal pipeline stages with their funnel step from the funnel_steps seed. Every stage
@@ -24,6 +39,129 @@ models:
           - not_null
       - name: sort_order
         description: Ordering of the step in the funnel.
+
+  - name: fct_deals
+    description: >
+      One row per deal with its lifecycle summary. Every deal in the source ends with a
+      lost_reason, so lost_at marks the end of the deal. Deals flagged with
+      has_multiple_creations (5 ids) combine two parallel lifecycles, so their attributes
+      span both (e.g. deal_duration_days runs from the first creation to the last loss);
+      see int_crm__deal_stage_entries.
+    columns:
+      - name: deal_id
+        description: Pipedrive deal id.
+        data_tests:
+          - unique
+          - not_null
+      - name: created_at
+        description: First add_time of the deal.
+        data_tests:
+          - not_null
+      - name: owner_user_id
+        description: Latest owner of the deal.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_crm_users')
+                field: user_id
+      - name: owner_changes_count
+        description: Number of owner (user_id) changes.
+      - name: current_stage_id
+        description: Stage of the latest stage entry.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_deal_stages')
+                field: stage_id
+      - name: max_stage_id
+        description: Furthest stage the deal reached.
+      - name: stages_entered_count
+        description: Number of distinct stages the deal actually entered.
+      - name: stages_skipped_count
+        description: Number of distinct stages skipped (inferred) on the way to a later stage.
+      - name: first_stage_entered_at
+        description: Timestamp of the first stage entry.
+      - name: last_stage_entered_at
+        description: Timestamp of the latest stage entry.
+      - name: lost_at
+        description: Timestamp of the latest lost_reason change.
+      - name: lost_reason_id
+        description: Latest lost reason id.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('prep_pipedrive__lost_reasons')
+                field: lost_reason_id
+      - name: lost_reason_name
+        description: Latest lost reason label.
+      - name: deal_duration_days
+        description: Days between created_at and lost_at.
+      - name: has_multiple_creations
+        description: True when the deal_id has more than one add_time (two parallel lifecycles, cause unknown).
+
+  - name: fct_deal_stage_history
+    description: One row per actual stage entry of a deal, with when the deal left the stage.
+    columns:
+      - name: deal_stage_entry_id
+        description: Surrogate key from int_crm__deal_stage_entries.
+        data_tests:
+          - unique
+          - not_null
+      - name: deal_id
+        description: Pipedrive deal id.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('fct_deals')
+                field: deal_id
+      - name: stage_id
+        description: Stage entered.
+      - name: stage_name
+        description: Stage name.
+      - name: previous_stage_id
+        description: Stage before this entry.
+      - name: next_stage_id
+        description: Stage after this entry (null for the current stage).
+      - name: entered_at
+        description: Timestamp the deal entered the stage.
+      - name: exited_at
+        description: Timestamp the deal entered the next stage (null for the current stage).
+      - name: days_in_stage
+        description: Days between entered_at and exited_at.
+      - name: is_current_stage
+        description: True for the latest stage entry of the deal.
+
+  - name: fct_sales_calls
+    description: >
+      One row per sales call activity (Sales Call 1 and 2), done or not. Only 8 of the
+      activity deal_ids exist in fct_deals, so deal_id is not tested against it.
+    columns:
+      - name: sales_call_id
+        description: Surrogate key over all columns (activity_id is not unique in the source).
+        data_tests:
+          - unique
+          - not_null
+      - name: activity_id
+        description: Pipedrive activity id.
+      - name: deal_id
+        description: Deal the call belongs to.
+      - name: assigned_user_id
+        description: User the call is assigned to.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_crm_users')
+                field: user_id
+      - name: activity_type
+        description: Activity type code (meeting, sc_2).
+      - name: activity_type_name
+        description: Activity type name (Sales Call 1, Sales Call 2).
+      - name: funnel_step
+        description: Funnel step of the call (2.1 or 3.1).
+      - name: is_done
+        description: Whether the call was completed.
+      - name: due_at
+        description: Due timestamp of the call.
 
   - name: fct_funnel_events
     description: >

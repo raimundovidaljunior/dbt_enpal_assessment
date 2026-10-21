@@ -57,6 +57,7 @@ Conventions: import CTEs, then logic CTEs, then `final`. Columns are explicit an
 | **Funnel steps are defined in a seed.** | The README fixes the numbering and names. Steps 2.1 and 3.1 are activities, not stages; the seed also decides which activity types count as sales calls. | A new pipeline stage without a seed row fails the build (not_null tests on `dim_deal_stages`). |
 | **The 5 deal_ids with two creations are treated as one deal.** Lost reason doesn't remove deals. | Their two histories run in parallel, so no split heuristic is reliable, and every deal has a lost reason. | Revisit once stakeholders confirm what they represent. |
 | **Dense grid**, with 0 for months without deals. | Gaps are explicit, and dashboards don't need to fill them. | Sparse rows |
+| **Pipeline order = `stage_id` order** (assumption used by the backfill). | Pipedrive orders stages by `order_nr`, which isn't in the export; ids 1–9 follow the README funnel. | Order by `order_nr` once it's exported. |
 
 ## How to read the report
 
@@ -72,6 +73,7 @@ Conventions: import CTEs, then logic CTEs, then `final`. Columns are explicit an
 - **Unit:** the backfill rule (1→3→5 infers 2 and 4; adjacent, backward and single-stage moves infer nothing) and `previous_stage_id` ordering.
 - **Singular:** stage entries reconcile with the source; inferred stages lie below the reached stage; report grain.
 - **Contract:** column names and types of the report.
+- **Not empty:** a small generic test (`tests/generic/not_empty.sql`) on the sources feeding the report and on the report. Key and grain tests pass on an empty table, so this is the only check that catches an empty load.
 
 ## Open questions for stakeholders
 
@@ -91,6 +93,6 @@ These are implemented on the stacked branch `feature/deal-marts-extensions`, kep
 
 Next steps not built yet:
 - conversion and cohort funnels from `fct_funnel_events`;
-- incremental loads (recompute only the deals changed since the last run, then merge);
+- incremental loads: the window functions need each deal's full history, so an incremental model would pick up the deal_ids changed since the last run, recompute them fully and merge on the key. Not worth it at 15k rows;
 - source freshness;
 - a shared calendar model (month spine with quarter and fiscal attributes) once more time-based reports exist, or if the report should run up to the current month. Today the month range comes from the data.

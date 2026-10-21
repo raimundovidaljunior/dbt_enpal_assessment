@@ -6,7 +6,9 @@ seeds:
       Definition of the sales funnel steps reported in rep_sales_funnel_monthly,
       and the CRM event each step is derived from (a deal stage or an activity type).
       It is the report contract (README numbering and names), so it is maintained by hand;
-      the not_null tests on dim_deal_stages fail if a pipeline stage has no row here.
+      the not_null tests on dim_deal_stages fail if a pipeline stage has no row here. Its
+      activity rows also define which activity types count as sales calls
+      (int_crm__sales_calls filters on them).
     columns:
       - name: funnel_step
         description: Funnel step number as text (e.g. '2.1').

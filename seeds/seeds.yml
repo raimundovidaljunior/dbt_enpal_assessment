@@ -11,12 +11,12 @@ seeds:
       (int_crm__sales_calls filters on them).
     columns:
       - name: funnel_step
-        description: Funnel step number as text (e.g. '2.1').
+        description: '{{ doc("funnel_step") }}'
         data_tests:
           - unique
           - not_null
       - name: kpi_name
-        description: Display name of the funnel step.
+        description: '{{ doc("kpi_name") }}'
         data_tests:
           - unique
           - not_null
@@ -34,7 +34,7 @@ seeds:
           - unique
           - not_null
       - name: sort_order
-        description: Ordering of the steps in the funnel.
+        description: '{{ doc("sort_order") }}'
         data_tests:
           - unique
           - not_null

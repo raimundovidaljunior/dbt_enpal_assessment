@@ -35,7 +35,7 @@ models:
         data_tests:
           - not_null
       - name: kpi_name
-        description: Funnel step name.
+        description: '{{ doc("kpi_name") }}'
         data_type: text
         data_tests:
           - not_null
@@ -43,7 +43,7 @@ models:
               arguments:
                 values: ['Lead Generation', 'Qualified Lead', 'Sales Call 1', 'Needs Assessment', 'Sales Call 2', 'Proposal/Quote Preparation', 'Negotiation', 'Closing', 'Implementation/Onboarding', 'Follow-up/Customer Success', 'Renewal/Expansion']
       - name: funnel_step
-        description: Funnel step number as text.
+        description: '{{ doc("funnel_step") }}'
         data_type: varchar(10)
         data_tests:
           - not_null

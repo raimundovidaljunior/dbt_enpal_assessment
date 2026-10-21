@@ -13,7 +13,7 @@ models:
           - unique
           - not_null
       - name: stage_name
-        description: Stage name as stored in Pipedrive.
+        description: '{{ doc("stage_name") }}'
       - name: funnel_step
         description: '{{ doc("funnel_step") }}'
         data_tests:

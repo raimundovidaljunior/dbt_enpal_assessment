@@ -89,9 +89,9 @@ These models aren't needed for the report. They are reusable entities for other 
 | Model | Grain | Notes |
 |---|---|---|
 | `int_crm__deal_current_state` | deal | Latest value per field from the change log: `distinct on (deal_id, changed_field_key)` plus a pivot. Gives owner, current stage, lost reason and lost_at, plus created_at and counts. |
-| `fct_deals` | deal | Current state plus stage aggregates (entered, skipped, max), first and last stage dates, lost reason name, `deal_duration_days` (created → lost), and `has_multiple_creations` (flags the 5 ids with two creations). |
+| `fct_deals` | deal | Current state plus stage aggregates (entered, skipped, max), first and last stage dates, lost reason name, `deal_duration_days` (created → lost), and `has_multiple_creations` (flags the 5 ids with two creations). After a backward move, a stage can count as both skipped and entered. |
 | `fct_deal_stage_history` | actual stage entry | `next_stage_id`, `exited_at`, `days_in_stage`, `is_current_stage`. |
-| `fct_sales_calls` | activity row | Sales calls with their funnel step. Keyed on `sales_call_id`, because `activity_id` isn't unique. |
+| `fct_sales_calls` | activity row | Sales calls with their funnel step and activity type name. Keyed on `sales_call_id`, because `activity_id` isn't unique. |
 | `dim_crm_users` | user | Deal owners and activity assignees. It's named by domain, not source, so it survives a CRM change. |
 
 With these models `int_crm__deal_stage_entries` has four readers, which further justifies materializing it as a table. A singular test checks that durations are never negative.

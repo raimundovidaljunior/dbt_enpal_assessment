@@ -13,6 +13,8 @@ sources:
           Change log of deal fields: one row per change of a field on a deal.
           The meaning of new_value depends on changed_field_key (timestamp for
           add_time, id for stage_id / user_id / lost_reason).
+        data_tests:
+          - not_empty
         columns:
           - name: deal_id
             description: Pipedrive deal id.
@@ -36,6 +38,8 @@ sources:
         description: >
           Activities (calls, meetings) assigned to users. activity_id is not
           unique in the raw data, so its uniqueness test only warns.
+        data_tests:
+          - not_empty
         columns:
           - name: activity_id
             description: Pipedrive activity id.
@@ -97,6 +101,8 @@ sources:
 
       - name: stages
         description: Lookup of deal pipeline stages.
+        data_tests:
+          - not_empty
         columns:
           - name: stage_id
             description: Stage id, referenced by deal_changes.new_value when changed_field_key = 'stage_id'.

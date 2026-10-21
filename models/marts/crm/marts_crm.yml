@@ -23,22 +23,22 @@ models:
       added to seeds/funnel_steps.csv.
     columns:
       - name: stage_id
-        description: Stage id.
+        description: '{{ doc("stage_id") }}'
         data_tests:
           - unique
           - not_null
       - name: stage_name
         description: Stage name as stored in Pipedrive.
       - name: funnel_step
-        description: Funnel step number of the stage.
+        description: '{{ doc("funnel_step") }}'
         data_tests:
           - not_null
       - name: kpi_name
-        description: Funnel step name used in reporting.
+        description: '{{ doc("kpi_name") }}'
         data_tests:
           - not_null
       - name: sort_order
-        description: Ordering of the step in the funnel.
+        description: '{{ doc("sort_order") }}'
 
   - name: fct_deals
     description: >
@@ -184,7 +184,7 @@ models:
         data_tests:
           - not_null
       - name: funnel_step
-        description: Funnel step number as text.
+        description: '{{ doc("funnel_step") }}'
         data_tests:
           - not_null
           - relationships:
@@ -192,11 +192,11 @@ models:
                 to: ref('funnel_steps')
                 field: funnel_step
       - name: kpi_name
-        description: Funnel step name.
+        description: '{{ doc("kpi_name") }}'
         data_tests:
           - not_null
       - name: sort_order
-        description: Ordering of the funnel step.
+        description: '{{ doc("sort_order") }}'
         data_tests:
           - not_null
       - name: event_at

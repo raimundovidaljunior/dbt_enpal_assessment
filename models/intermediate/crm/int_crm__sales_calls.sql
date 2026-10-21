@@ -26,9 +26,9 @@ final as (
         activity.due_at
     from activity
     -- sales calls are the activity types mapped to a funnel step in the seed
-    where activity.activity_type in (
-        select source_value from funnel_steps where source_type = 'activity'
-    )
+    inner join funnel_steps
+        on funnel_steps.source_type = 'activity'
+        and funnel_steps.source_value = activity.activity_type
 
 )
 

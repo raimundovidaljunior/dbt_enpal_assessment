@@ -23,7 +23,7 @@ models:
           - unique
           - not_null
       - name: deal_id
-        description: Pipedrive deal id.
+        description: '{{ doc("deal_id") }}'
         data_tests:
           - not_null
       - name: stage_id
@@ -54,7 +54,7 @@ models:
           - unique
           - not_null
       - name: deal_id
-        description: Pipedrive deal id.
+        description: '{{ doc("deal_id") }}'
         data_tests:
           - not_null
       - name: stage_id

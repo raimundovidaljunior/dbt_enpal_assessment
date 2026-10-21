@@ -23,7 +23,8 @@ sales_calls as (
 
 ),
 
--- events keyed like the seed (source_type, source_value), so it is joined once
+-- events keyed like the seed (source_type, source_value), so it is joined once. source_value
+-- mixes stage ids and activity codes, so stage ids are cast to text for this join only
 events as (
 
     select

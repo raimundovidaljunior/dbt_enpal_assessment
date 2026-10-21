@@ -31,3 +31,33 @@ Funnel step name used in reporting (README naming), from the `funnel_steps` seed
 {% docs sort_order %}
 Position of the funnel step in the funnel, from the `funnel_steps` seed.
 {% enddocs %}
+
+{% docs activity_deal_id %}
+Deal id on the activity. It does not link to the deals in `deal_changes`: only 8 of 4,572 match,
+about what chance gives (see `analyses/08_activity_deal_overlap.sql`).
+{% enddocs %}
+
+{% docs activity_id %}
+Pipedrive activity id. Not unique in the source: 11 ids appear twice with different attributes.
+{% enddocs %}
+
+{% docs assigned_user_id %}
+Pipedrive user the activity is assigned to.
+{% enddocs %}
+
+{% docs stage_name %}
+Stage name as stored in Pipedrive (stage 2 is 'Qualified lead'); reporting uses the README naming
+from the `funnel_steps` seed.
+{% enddocs %}
+
+{% docs entered_at %}
+Timestamp the deal entered the stage (the `stage_id` change in `deal_changes`).
+{% enddocs %}
+
+{% docs previous_stage_id %}
+Stage the deal was in before this entry, in time order (null for the first entry).
+{% enddocs %}
+
+{% docs sales_call_id %}
+Surrogate key over all activity columns (`activity_id` is not unique in the source).
+{% enddocs %}

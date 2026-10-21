@@ -67,16 +67,16 @@ models:
     description: Pipedrive users (deal owners and activity assignees).
     columns:
       - name: user_id
-        description: User id.
+        description: '{{ doc("user_id") }}'
         data_tests:
           - unique
           - not_null
       - name: user_name
-        description: User full name.
+        description: '{{ doc("user_name") }}'
       - name: email
-        description: User email.
+        description: '{{ doc("email") }}'
       - name: modified_at
-        description: Last modification timestamp of the user record.
+        description: '{{ doc("modified_at") }}'
 
   - name: prep_pipedrive__lost_reasons
     description: Lost reason options, exploded from the lost_reason entry of the fields source (field_value_options JSONB).
@@ -87,6 +87,6 @@ models:
           - unique
           - not_null
       - name: lost_reason_name
-        description: Lost reason label.
+        description: '{{ doc("lost_reason_name") }}'
         data_tests:
           - not_null

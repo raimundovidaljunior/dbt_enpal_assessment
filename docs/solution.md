@@ -84,15 +84,22 @@ Conventions: import CTEs, then logic CTEs, then `final`. Columns are explicit an
 5. Should calls that weren't done count?
 6. Should Lead Generation count deals when they are created or when they enter stage 1?
 
-## Possible extensions
+## Extensions: deal-level marts
 
-These are implemented on the stacked branch `feature/deal-marts-extensions`, kept out of this PR to keep it focused:
-- `fct_deals`: one row per deal (owner, current and max stage, stages skipped, lost reason, duration), built from an `int_crm__deal_current_state` model.
-- `fct_deal_stage_history`: time spent in each stage.
-- `fct_sales_calls` and `dim_crm_users`.
+These models aren't needed for the report. They are reusable entities for other analyses, and are delivered separately from the main PR.
+
+| Model | Grain | Notes |
+|---|---|---|
+| `int_crm__deal_current_state` | deal | Latest value per field from the change log: `distinct on (deal_id, changed_field_key)` plus a pivot. Gives owner, current stage, lost reason and lost_at, plus created_at and counts. |
+| `fct_deals` | deal | Current state plus stage aggregates (entered, skipped, max), first and last stage dates, lost reason name, `deal_duration_days` (created → lost), and `has_multiple_creations` (flags the 5 ids with two creations). After a backward move, a stage can count as both skipped and entered. |
+| `fct_deal_stage_history` | actual stage entry | `next_stage_id`, `exited_at`, `days_in_stage`, `is_current_stage`. |
+| `fct_sales_calls` | activity row | Sales calls with their funnel step and activity type name. Keyed on `sales_call_id`, because `activity_id` isn't unique. |
+| `dim_crm_users` | user | Deal owners and activity assignees. It's named by domain, not source, so it survives a CRM change. |
+
+With these models `int_crm__deal_stage_entries` has four readers, which further justifies materializing it as a table. A singular test checks that durations are never negative.
 
 Next steps not built yet:
 - conversion and cohort funnels from `fct_funnel_events`;
-- incremental loads: the window functions need each deal's full history, so an incremental model would pick up the deal_ids changed since the last run, recompute them fully and merge on the key. Not worth it at 15k rows;
+- incremental loads: the window functions need each deal's full history, so an incremental `int_crm__deal_current_state` (or stage entries) would pick up the deal_ids changed since the last run, recompute them fully and merge on `deal_id`. Not worth it at 15k rows;
 - source freshness;
 - a shared calendar model (month spine with quarter and fiscal attributes) once more time-based reports exist, or if the report should run up to the current month. Today the month range comes from the data.

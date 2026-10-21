@@ -119,16 +119,16 @@ sources:
         description: Pipedrive users (deal owners and activity assignees).
         columns:
           - name: id
-            description: User id.
+            description: '{{ doc("user_id") }}'
             data_tests:
               - unique
               - not_null
           - name: name
-            description: User full name.
+            description: '{{ doc("user_name") }}'
           - name: email
-            description: User email.
+            description: '{{ doc("email") }}'
           - name: modified
-            description: Last modification timestamp of the user record.
+            description: '{{ doc("modified_at") }}'
 
       - name: fields
         description: >

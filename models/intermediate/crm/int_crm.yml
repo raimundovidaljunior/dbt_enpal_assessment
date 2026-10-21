@@ -11,9 +11,9 @@ models:
       so their previous_stage_id and inferred rows can be off. What they represent needs
       to be clarified with business stakeholders before modelling around it.
 
-      Materialized as a table (an exception to the intermediate views): fct_funnel_events reads
-      it directly and through int_crm__deal_stage_entries_inferred, so as a view its window
-      function would run twice per build of the funnel.
+      Materialized as a table (an exception to the intermediate views): it is the most
+      reused node (inferred stages, fct_deals, fct_deal_stage_history, fct_funnel_events),
+      so the window function runs once instead of once per downstream query.
     config:
       materialized: table
     columns:
@@ -71,6 +71,36 @@ models:
         description: Timestamp of the actual entry into reached_stage_id.
         data_tests:
           - not_null
+
+  - name: int_crm__deal_current_state
+    description: >
+      One row per deal with its current state, rebuilt from the deal_changes log by taking
+      the latest value of each field (what Pipedrive's deals table would hold). Base for fct_deals.
+    columns:
+      - name: deal_id
+        description: '{{ doc("deal_id") }}'
+        data_tests:
+          - unique
+          - not_null
+      - name: created_at
+        description: '{{ doc("created_at") }}'
+      - name: creations_count
+        description: Number of add_time events (more than 1 means two parallel lifecycles under one id).
+      - name: owner_user_id
+        description: '{{ doc("owner_user_id") }}'
+      - name: owner_changes_count
+        description: '{{ doc("owner_changes_count") }}'
+      - name: current_stage_id
+        description: '{{ doc("current_stage_id") }}'
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('prep_pipedrive__stages')
+                field: stage_id
+      - name: lost_reason_id
+        description: '{{ doc("lost_reason_id") }}'
+      - name: lost_at
+        description: '{{ doc("lost_at") }}'
 
   - name: int_crm__sales_calls
     description: >

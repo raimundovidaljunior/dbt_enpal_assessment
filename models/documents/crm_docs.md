@@ -61,3 +61,47 @@ Stage the deal was in before this entry, in time order (null for the first entry
 {% docs sales_call_id %}
 Surrogate key over all activity columns (`activity_id` is not unique in the source).
 {% enddocs %}
+
+{% docs created_at %}
+First `add_time` of the deal.
+{% enddocs %}
+
+{% docs owner_user_id %}
+Latest owner (`user_id`) of the deal.
+{% enddocs %}
+
+{% docs owner_changes_count %}
+Number of owner (`user_id`) changes.
+{% enddocs %}
+
+{% docs current_stage_id %}
+Stage of the deal's latest stage change.
+{% enddocs %}
+
+{% docs lost_at %}
+Timestamp of the latest `lost_reason` change. Every deal has one, so it marks the end of the deal.
+{% enddocs %}
+
+{% docs lost_reason_id %}
+Latest lost reason id; labels are in `prep_pipedrive__lost_reasons`.
+{% enddocs %}
+
+{% docs lost_reason_name %}
+Lost reason label.
+{% enddocs %}
+
+{% docs user_id %}
+Pipedrive user id.
+{% enddocs %}
+
+{% docs user_name %}
+User full name.
+{% enddocs %}
+
+{% docs email %}
+User email. Not unique: 4 emails belong to two user ids each.
+{% enddocs %}
+
+{% docs modified_at %}
+Last modification timestamp of the user record.
+{% enddocs %}

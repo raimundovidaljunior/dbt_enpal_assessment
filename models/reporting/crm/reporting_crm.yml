@@ -20,6 +20,9 @@ models:
         2024-01 shows 148 Sales Call 1 against 30 Lead Generation.
 
       - Activity data ends in 2024-09, so steps 2.1 and 3.1 are 0 from 2024-10.
+
+      - Lead Generation (step 1) counts deals entering stage 1, a median of 35 days after
+        creation, so 2024-01 shows 30 although 247 deals were created that month.
     config:
       contract:
         enforced: true

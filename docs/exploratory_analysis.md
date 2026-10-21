@@ -21,6 +21,7 @@ psql -h localhost -U admin -d postgres -f target/compiled/enpal_assessment_proje
 | 8 | Stage 2 is named `Qualified lead` in `stages`, but `Qualified Lead` in the README and `fields`. | [07](../analyses/07_lookups_quality.sql) | The `funnel_steps` seed holds the README naming and numbering. |
 | 9 | `users`: 4 duplicate emails (different ids). Every `user_id` referenced by `deal_changes` exists. | [07](../analyses/07_lookups_quality.sql) | Users are keyed on `user_id`, not email. A source relationship test guards activity assignees. |
 | 10 | Lost reason labels exist only inside `fields.field_value_options` (JSONB). | `prep_pipedrive__lost_reasons` | They are exploded into a lookup in the preparation layer (the one exception to 1:1 preparation models). |
+| 11 | **Deals enter stage 1 a median of 35 days after creation** (2 to 83 days). 87% (1,732) enter it in a different month than they were created: 2024-01 has 247 deals created but 30 entering stage 1. | [09](../analyses/09_creation_vs_stage_1.sql) | Lead Generation (step 1) counts **stage 1 entries**, like every other stage step. Counting by creation date (`add_time`) is the alternative, left as an open question. |
 
 ## Date coverage
 

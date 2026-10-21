@@ -10,6 +10,8 @@ python -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/dbt build --profiles-dir .      # seeds, models, unit/data tests, contract
 ```
 
+`docker compose up` creates the raw tables in `public` and loads `raw_data/*.csv` (`init.sql`, `raw_data/load_data.sh`). `profiles.yml` lives in the repo root, hence `--profiles-dir .`.
+
 The output is `public_reporting_crm.rep_sales_funnel_monthly`: 2024-01 to 2025-02, 14 months × 11 steps = 154 rows.
 
 ## Lineage
@@ -49,15 +51,17 @@ Conventions: import CTEs, then logic CTEs, then `final`. Columns are explicit an
 | Decision | Why | Alternative (how to switch) |
 |---|---|---|
 | **Skipped stages count as entered.** A 1→3 move also counts stage 2. | 84% of deals skip stages; this matches Pipedrive Insights' funnel convention. The inferred rows live in their own model, flagged `is_inferred`. | Actual entries only: `where not is_inferred` on `fct_funnel_events` |
+| **Lead Generation counts stage 1 entries**, not deal creation. | Every stage step is then a stage entry, and step 1 maps to stage 1 like steps 2–9 map to theirs. Deals enter stage 1 a median of 35 days after creation. | Count step 1 by `add_time`: add creation events to `fct_funnel_events` for step 1. |
 | **Event-month counting**: deals with an event for the step in that month. | A monthly view of funnel activity. A deal reaching several steps in a month counts in each. | Cohort by created month, or cumulative "reached ≥ step". Both can be built from `fct_funnel_events`. |
 | **Steps 2.1 and 3.1 count sales calls from `activity`**, done or not, by `due_to` month. | Activity `deal_id`s don't link to deals: the 8 of 4,572 that match are what chance predicts. Joining would keep only coincidences. `due_to` is the only timestamp. | Done calls only: `where is_done`. Once an id mapping exists, join the calls to deals. |
-| **Funnel steps are defined in a seed.** | The README fixes the numbering and names. Steps 2.1 and 3.1 are activities, not stages. | A new pipeline stage without a seed row fails the build (not_null tests on `dim_deal_stages`). |
+| **Funnel steps are defined in a seed.** | The README fixes the numbering and names. Steps 2.1 and 3.1 are activities, not stages; the seed also decides which activity types count as sales calls. | A new pipeline stage without a seed row fails the build (not_null tests on `dim_deal_stages`). |
 | **The 5 deal_ids with two creations are treated as one deal.** Lost reason doesn't remove deals. | Their two histories run in parallel, so no split heuristic is reliable, and every deal has a lost reason. | Revisit once stakeholders confirm what they represent. |
 | **Dense grid**, with 0 for months without deals. | Gaps are explicit, and dashboards don't need to fill them. | Sparse rows |
 
 ## How to read the report
 
 - Counts are by **event month**, so a later step can exceed an earlier one in the same month.
+- **Lead Generation counts deals entering stage 1**, about a month after they're created (median 35 days). That's why 2024-01 shows 30 although 247 deals were created that month.
 - **Steps 2.1 and 3.1 count sales calls, not funnel deals**: the activity `deal_id`s can't be linked to the deals (each call carries its own id). For example, 2024-01 has 148 Sales Call 1 against 30 Lead Generation.
 - **Activity data ends in 2024-09**, so steps 2.1 and 3.1 are 0 from 2024-10. Deal creation also ends in 2024-09, so later months show deals finishing their path.
 
@@ -76,6 +80,7 @@ Conventions: import CTEs, then logic CTEs, then `final`. Columns are explicit an
 3. What do the 5 deal_ids with two creations represent: merged deals, duplicates, or something else?
 4. The activity export seems to use a different deal id space: can we get the mapping to `deal_changes`?
 5. Should calls that weren't done count?
+6. Should Lead Generation count deals when they are created or when they enter stage 1?
 
 ## Extensions: deal-level marts
 

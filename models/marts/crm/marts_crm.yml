@@ -178,7 +178,9 @@ models:
           - unique
           - not_null
       - name: deal_id
-        description: Deal id.
+        description: >
+          Deal id. For sales-call events it is the activity's deal_id, which does not link to
+          the deals in deal_changes (see analyses/08_activity_deal_overlap.sql).
         data_tests:
           - not_null
       - name: funnel_step

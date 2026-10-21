@@ -83,24 +83,24 @@ models:
           - unique
           - not_null
       - name: created_at
-        description: First add_time of the deal.
+        description: '{{ doc("created_at") }}'
       - name: creations_count
         description: Number of add_time events (more than 1 means two parallel lifecycles under one id).
       - name: owner_user_id
-        description: Latest owner (user_id) of the deal.
+        description: '{{ doc("owner_user_id") }}'
       - name: owner_changes_count
-        description: Number of owner (user_id) changes.
+        description: '{{ doc("owner_changes_count") }}'
       - name: current_stage_id
-        description: Latest stage_id of the deal.
+        description: '{{ doc("current_stage_id") }}'
         data_tests:
           - relationships:
               arguments:
                 to: ref('prep_pipedrive__stages')
                 field: stage_id
       - name: lost_reason_id
-        description: Latest lost reason id.
+        description: '{{ doc("lost_reason_id") }}'
       - name: lost_at
-        description: Timestamp of the latest lost_reason change.
+        description: '{{ doc("lost_at") }}'
 
   - name: int_crm__sales_calls
     description: >

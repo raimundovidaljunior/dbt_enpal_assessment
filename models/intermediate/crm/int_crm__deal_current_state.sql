@@ -5,6 +5,8 @@ with deal_changes as (
 
 ),
 
+-- latest event per deal and field: distinct on keeps the first row of each (deal_id,
+-- changed_field_key) group in the order by, i.e. the most recent change
 latest_values as (
 
     select distinct on (deal_id, changed_field_key)
@@ -17,6 +19,7 @@ latest_values as (
 
 ),
 
+-- creation time and counts need the full log, not just the latest event
 field_counts as (
 
     select
@@ -29,6 +32,8 @@ field_counts as (
 
 ),
 
+-- pivot one row per field into columns; after distinct on there is a single row per field,
+-- so max() only picks that value
 current_values as (
 
     select

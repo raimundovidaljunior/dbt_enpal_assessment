@@ -78,7 +78,7 @@ models:
       the latest value of each field (what Pipedrive's deals table would hold). Base for fct_deals.
     columns:
       - name: deal_id
-        description: Pipedrive deal id.
+        description: '{{ doc("deal_id") }}'
         data_tests:
           - unique
           - not_null

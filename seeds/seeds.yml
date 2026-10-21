@@ -27,7 +27,12 @@ seeds:
               arguments:
                 values: ['stage', 'activity']
       - name: source_value
-        description: stage_id (for stage) or activity_type code (for activity).
+        description: >
+          stage_id (for stage) or activity_type code (for activity). Unique, so joining the
+          seed on it never duplicates events.
+        data_tests:
+          - unique
+          - not_null
       - name: sort_order
         description: Ordering of the steps in the funnel.
         data_tests:

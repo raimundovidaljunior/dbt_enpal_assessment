@@ -26,6 +26,8 @@ models:
     config:
       contract:
         enforced: true
+    data_tests:
+      - not_empty
     columns:
       - name: month
         description: First day of the month the funnel events happened in.

@@ -1,3 +1,9 @@
+## Solution
+
+- [docs/solution.md](docs/solution.md): architecture, models, decisions and assumptions, how to read the report, tests, open questions.
+- [docs/exploratory_analysis.md](docs/exploratory_analysis.md): data profiling findings, backed by the queries in [`analyses/`](analyses).
+- Build everything (seeds, models, tests): `dbt build --profiles-dir .`. The deliverable is `public_reporting_crm.rep_sales_funnel_monthly`.
+
 ## Setup
 
 1. Download Docker Desktop (if you don’t have installed) using the official website, install and launch.

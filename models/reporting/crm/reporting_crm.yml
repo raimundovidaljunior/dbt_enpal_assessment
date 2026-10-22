@@ -1,0 +1,57 @@
+version: 2
+
+models:
+  - name: rep_sales_funnel_monthly
+    description: >
+      Monthly sales funnel: distinct deals per funnel step per month. Skipped stages count as
+      entered (Pipedrive Insights convention), and sales calls count only once done. One row
+      per month and funnel step, with 0 for steps without deals. To count only stages deals were
+      actually recorded in, filter fct_funnel_events on not is_inferred.
+
+
+      How to read it:
+
+      - Deals are counted in the month the event happened (event month, not the month the deal
+        was created), so a later step can exceed an earlier one in the same month.
+
+      - Sales Call 1 and 2 (steps 2.1 and 3.1) count done sales calls by due month, not deals of
+        the stage funnel. Activity deal_ids cannot be linked to deal_changes: 8 of 4,572 match, about
+        what random chance gives (~10), and almost every call carries its own deal_id. So
+        2024-01 shows 77 Sales Call 1 against 30 Lead Generation.
+
+      - Activity data ends in 2024-09, so steps 2.1 and 3.1 are 0 from 2024-10.
+
+      - Lead Generation (step 1) counts deals entering stage 1, a median of 35 days after
+        creation, so 2024-01 shows 30 although 247 deals were created that month.
+    config:
+      contract:
+        enforced: true
+    data_tests:
+      - not_empty
+    columns:
+      - name: month
+        description: First day of the month the funnel events happened in.
+        data_type: date
+        data_tests:
+          - not_null
+      - name: kpi_name
+        description: '{{ doc("kpi_name") }}'
+        data_type: text
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Lead Generation', 'Qualified Lead', 'Sales Call 1', 'Needs Assessment', 'Sales Call 2', 'Proposal/Quote Preparation', 'Negotiation', 'Closing', 'Implementation/Onboarding', 'Follow-up/Customer Success', 'Renewal/Expansion']
+      - name: funnel_step
+        description: '{{ doc("funnel_step") }}'
+        data_type: varchar(10)
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['1', '2', '2.1', '3', '3.1', '4', '5', '6', '7', '8', '9']
+      - name: deals_count
+        description: Distinct deals that reached the funnel step in the month.
+        data_type: bigint
+        data_tests:
+          - not_null

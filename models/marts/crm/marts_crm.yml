@@ -1,0 +1,76 @@
+version: 2
+
+models:
+  - name: dim_deal_stages
+    description: >
+      Deal pipeline stages with their funnel step from the funnel_steps seed. Every stage
+      must have a seed row: a new pipeline stage fails the not_null tests below until it is
+      added to seeds/funnel_steps.csv.
+    columns:
+      - name: stage_id
+        description: '{{ doc("stage_id") }}'
+        data_tests:
+          - unique
+          - not_null
+      - name: stage_name
+        description: '{{ doc("stage_name") }}'
+      - name: funnel_step
+        description: '{{ doc("funnel_step") }}'
+        data_tests:
+          - not_null
+      - name: kpi_name
+        description: '{{ doc("kpi_name") }}'
+        data_tests:
+          - not_null
+      - name: sort_order
+        description: '{{ doc("sort_order") }}'
+
+  - name: fct_funnel_events
+    description: >
+      One row per funnel event (actual stage entry, inferred stage entry or sales call) mapped to its funnel step
+      via the funnel_steps seed. Base for rep_sales_funnel_monthly, and reusable for conversion or cohort
+      analysis. Filter on is_inferred to exclude backfilled stages and on is_done to keep completed calls only.
+    columns:
+      - name: funnel_event_id
+        description: Id of the source record (deal_stage_entry_id for stage events, sales_call_id for activities).
+        data_tests:
+          - unique
+          - not_null
+      - name: deal_id
+        description: >
+          Deal id. For sales-call events it is the activity's deal_id, which does not link to
+          the deals in deal_changes (see analyses/08_activity_deal_overlap.sql).
+        data_tests:
+          - not_null
+      - name: funnel_step
+        description: '{{ doc("funnel_step") }}'
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('funnel_steps')
+                field: funnel_step
+      - name: kpi_name
+        description: '{{ doc("kpi_name") }}'
+        data_tests:
+          - not_null
+      - name: sort_order
+        description: '{{ doc("sort_order") }}'
+        data_tests:
+          - not_null
+      - name: event_at
+        description: Timestamp of the event (stage entered_at or activity due_at).
+        data_tests:
+          - not_null
+      - name: event_source
+        description: Origin of the event ('stage' or 'activity').
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['stage', 'activity']
+      - name: is_inferred
+        description: True for skipped stages backfilled from int_crm__deal_stage_entries_inferred.
+        data_tests:
+          - not_null
+      - name: is_done
+        description: Whether the event happened (always true for stage entries).

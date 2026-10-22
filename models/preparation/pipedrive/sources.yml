@@ -1,0 +1,151 @@
+version: 2
+
+sources:
+  - name: postgres_public
+    description: >
+      Raw Pipedrive CRM export. Tables are created by init.sql and loaded 1:1
+      from raw_data/*.csv by raw_data/load_data.sh when docker compose starts.
+    database: postgres
+    schema: public
+    tables:
+      - name: deal_changes
+        description: >
+          Change log of deal fields: one row per change of a field on a deal.
+          The meaning of new_value depends on changed_field_key (timestamp for
+          add_time, id for stage_id / user_id / lost_reason).
+        data_tests:
+          - not_empty
+        columns:
+          - name: deal_id
+            description: '{{ doc("deal_id") }}'
+            data_tests:
+              - not_null
+          - name: change_time
+            description: Timestamp when the field changed.
+            data_tests:
+              - not_null
+          - name: changed_field_key
+            description: Key of the changed field (see the fields table).
+            data_tests:
+              - not_null
+              - accepted_values:
+                  arguments:
+                    values: ['add_time', 'stage_id', 'user_id', 'lost_reason']
+          - name: new_value
+            description: New value of the field, stored as text.
+
+      - name: activity
+        description: >
+          Activities (calls, meetings) assigned to users. activity_id is not
+          unique in the raw data, so its uniqueness test only warns.
+        data_tests:
+          - not_empty
+        columns:
+          - name: activity_id
+            description: '{{ doc("activity_id") }}'
+            data_tests:
+              - not_null
+              - unique:
+                  config:
+                    severity: warn
+          - name: type
+            description: Activity type code, joins to activity_types.type.
+            data_tests:
+              - not_null
+              - accepted_values:
+                  arguments:
+                    values: ['meeting', 'sc_2', 'follow_up', 'after_close_call']
+              - relationships:
+                  arguments:
+                    to: source('postgres_public', 'activity_types')
+                    field: type
+          - name: assigned_to_user
+            description: '{{ doc("assigned_user_id") }}'
+            data_tests:
+              - relationships:
+                  arguments:
+                    to: source('postgres_public', 'users')
+                    field: id
+          - name: deal_id
+            description: '{{ doc("activity_deal_id") }}'
+            data_tests:
+              - not_null
+          - name: done
+            description: Whether the activity was completed.
+          - name: due_to
+            description: Due timestamp of the activity.
+            data_tests:
+              - not_null
+
+      - name: activity_types
+        description: Lookup of activity types (e.g. meeting = Sales Call 1, sc_2 = Sales Call 2).
+        columns:
+          - name: id
+            description: Activity type id.
+            data_tests:
+              - unique
+              - not_null
+          - name: name
+            description: Activity type display name.
+          - name: active
+            description: Whether the type is active ('Yes' / 'No').
+            data_tests:
+              - accepted_values:
+                  arguments:
+                    values: ['Yes', 'No']
+          - name: type
+            description: Activity type code, referenced by activity.type.
+            data_tests:
+              - unique
+              - not_null
+
+      - name: stages
+        description: Lookup of deal pipeline stages.
+        data_tests:
+          - not_empty
+        columns:
+          - name: stage_id
+            description: Stage id, referenced by deal_changes.new_value when changed_field_key = 'stage_id'.
+            data_tests:
+              - unique
+              - not_null
+          - name: stage_name
+            description: '{{ doc("stage_name") }}'
+            data_tests:
+              - unique
+              - not_null
+
+      - name: users
+        description: Pipedrive users (deal owners and activity assignees).
+        columns:
+          - name: id
+            description: User id.
+            data_tests:
+              - unique
+              - not_null
+          - name: name
+            description: User full name.
+          - name: email
+            description: User email.
+          - name: modified
+            description: Last modification timestamp of the user record.
+
+      - name: fields
+        description: >
+          Deal field metadata. field_value_options holds the id/label options
+          (JSONB) for enumerated fields such as stage_id and lost_reason.
+        columns:
+          - name: id
+            description: Field id.
+            data_tests:
+              - unique
+              - not_null
+          - name: field_key
+            description: Field key, referenced by deal_changes.changed_field_key.
+            data_tests:
+              - unique
+              - not_null
+          - name: name
+            description: Field display name.
+          - name: field_value_options
+            description: JSONB array of {id, label} options for enumerated fields.

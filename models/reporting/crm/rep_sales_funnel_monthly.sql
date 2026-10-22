@@ -18,6 +18,8 @@ events as (
         funnel_step,
         deal_id
     from funnel_events
+    -- a sales call step counts only calls that took place; stage entries are always done
+    where is_done
 
 ),
 

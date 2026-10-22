@@ -3,6 +3,7 @@
 --   Deals enter stage 1 a median of 35 days after creation (add_time), between 2 and 83 days.
 --   1,732 of 1,995 deals (87%) enter stage 1 in a different month than they were created, so
 --   monthly counts differ a lot: 2024-01 has 247 deals created but 30 entering stage 1.
+--   Creation is steady at 205-262 deals per month from Jan to Aug 2024 (92 in Sep, when it ends).
 --   Consequence: step 1 counts stage 1 entries, like every other stage step (each step = a stage
 --   entry). Counting it by add_time instead is the alternative, left as an open question.
 with deal_changes as (

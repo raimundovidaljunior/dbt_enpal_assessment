@@ -4,7 +4,7 @@ models:
   - name: rep_sales_funnel_monthly
     description: >
       Monthly sales funnel: distinct deals per funnel step per month. Skipped stages count as
-      entered (Pipedrive Insights convention), and sales calls count whether done or not. One row
+      entered (Pipedrive Insights convention), and sales calls count only once done. One row
       per month and funnel step, with 0 for steps without deals. To count only stages deals were
       actually recorded in, filter fct_funnel_events on not is_inferred.
 
@@ -14,10 +14,10 @@ models:
       - Deals are counted in the month the event happened (event month, not the month the deal
         was created), so a later step can exceed an earlier one in the same month.
 
-      - Sales Call 1 and 2 (steps 2.1 and 3.1) count sales calls by due month, not deals of the
-        stage funnel. Activity deal_ids cannot be linked to deal_changes: 8 of 4,572 match, about
+      - Sales Call 1 and 2 (steps 2.1 and 3.1) count done sales calls by due month, not deals of
+        the stage funnel. Activity deal_ids cannot be linked to deal_changes: 8 of 4,572 match, about
         what random chance gives (~10), and almost every call carries its own deal_id. So
-        2024-01 shows 148 Sales Call 1 against 30 Lead Generation.
+        2024-01 shows 77 Sales Call 1 against 30 Lead Generation.
 
       - Activity data ends in 2024-09, so steps 2.1 and 3.1 are 0 from 2024-10.
 
